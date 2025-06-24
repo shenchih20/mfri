@@ -1,0 +1,8 @@
+
+module example_interfaces {
+  module srv {   
+    struct AddTwoInts_Response {
+      int64 sum;
+    };
+  };
+};

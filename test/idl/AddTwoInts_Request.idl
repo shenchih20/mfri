@@ -1,0 +1,10 @@
+
+module example_interfaces {
+  module srv {
+    struct AddTwoInts_Request {
+      int64 a;
+
+      int64 b;
+    };  
+  };
+};

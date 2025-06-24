@@ -1,4 +1,10 @@
-                                 Apache License
+NOTICE
+This project makes use of Fast DDS (eProsima Fast DDS), which is licensed under the Apache License, Version 2.0. 
+See https://github.com/eProsima/Fast-DDS for details.
+
+--------------------------------------------------------------------------------
+
+Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
 
