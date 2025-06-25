@@ -34,13 +34,26 @@ mini fastdds ros2 interface
 #include "mfri/publisher.hpp"
 #include "idl/HelloWorldPubSubTypes.hpp"
 
-mfri::MfriPublisher<HelloWorldPubSubType, HelloWorld> publisher("Hello", "HelloWorld");
-publisher.initialize(participant);
+class HelloWorldPublisher : public mfri::MfriPublisher<HelloWorldPubSubType, HelloWorld>
+{
+public:
+    
+    HelloWorldPublisher(const std::string& topic_name) : MfriPublisher(topic_name, "HelloWorld")
+    {
+        
 
-HelloWorld data;
-data.index(1);
-data.message("Hello World");
-publisher.publish(data);
+    }
+
+    void write_data(uint32_t index, const std::string& message)
+    {
+        
+        mData.index(index);
+        mData.message(message);
+
+        publish();
+    }
+
+};
 ```
 
 ### Subscriber
@@ -49,16 +62,20 @@ publisher.publish(data);
 #include "mfri/subscriber.hpp"
 #include "idl/HelloWorldPubSubTypes.hpp"
 
-class MySubscriber : public mfri::MfriSubscriber<HelloWorldPubSubType, HelloWorld> {
+class HelloWorldSubscriber : public mfri::MfriSubscriber<HelloWorldPubSubType, HelloWorld>
+{   
 public:
-    MySubscriber() : MfriSubscriber("Hello", "HelloWorld") {}
-    void process_data() override {
-        std::cout << "Received: " << mData.index() << ", " << mData.message() << std::endl;
+    uint32_t Index = 0;
+    HelloWorldSubscriber(const std::string& topic_name) : MfriSubscriber(topic_name, "HelloWorld")
+    {
+        
+    }
+
+    void process_data() override
+    {
+        Index = mData.index();        
     }
 };
-
-MySubscriber subscriber;
-subscriber.initialize(participant);
 ```
 
 ### Service Server
@@ -82,8 +99,6 @@ public:
     }
 };
 
-AddTwoIntsServer server;
-server.initialize(participant);
 ```
 
 ### Service Client
@@ -93,19 +108,35 @@ server.initialize(participant);
 #include "idl/AddTwoInts_RequestPubSubTypes.hpp"
 #include "idl/AddTwoInts_ResponsePubSubTypes.hpp"
 
-mfri::MfriSrvClient<
-    example_interfaces::srv::AddTwoInts_RequestPubSubType,
-    example_interfaces::srv::AddTwoInts_Request,
-    example_interfaces::srv::AddTwoInts_ResponsePubSubType,
-    example_interfaces::srv::AddTwoInts_Response> client("add_two_ints", "example_interfaces::srv::dds_::AddTwoInts_");
+class AddTwoIntsSrvClient : public mfri::MfriSrvClient<example_interfaces::srv::AddTwoInts_RequestPubSubType,        
+                                                       example_interfaces::srv::AddTwoInts_Request, 
+                                                       example_interfaces::srv::AddTwoInts_ResponsePubSubType, 
+                                                       example_interfaces::srv::AddTwoInts_Response>
+{
+public:
+     AddTwoIntsSrvClient() : MfriSrvClient("add_two_ints", 
+                                           "example_interfaces::srv::dds_::AddTwoInts_")
+     {
 
-client.initialize(participant);
+     }
+    
 
-client.request_data().a(1);
-client.request_data().b(2);
-client.send_request();
-int64_t sum = client.response_data().sum();
-std::cout << "Sum: " << sum << std::endl;
+     ReturnCode_t get_sum(int64_t a, int64_t b, int64_t& sum)
+     {
+        request_data().a(a);
+        request_data().b(b);
+
+        auto ret = send_request();
+        if (ret != RETCODE_OK)
+        {            
+            return ret;
+        }
+        sum = response_data().sum();
+               
+        return RETCODE_OK;                         
+     }
+     
+};
 ```
 
 ## License
