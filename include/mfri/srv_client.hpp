@@ -55,6 +55,7 @@ public:
     }
 
 protected:
+    friend class MfriParamClient;
     ReturnCode_t send_request()
     {
         {

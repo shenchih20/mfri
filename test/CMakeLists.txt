@@ -15,14 +15,11 @@ add_executable(mfri_test)
 
 file(GLOB IDL_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/idl/*.cxx")
 
-get_filename_component(INCLUDE_ABS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../include/" ABSOLUTE)
-
-message("Include path: ${INCLUDE_ABS_PATH}")
 
 target_include_directories(
     mfri_test
     PUBLIC    
-    ${INCLUDE_ABS_PATH}
+    ${MFRI_INCLUDE_DIRS}
 )
 
 
@@ -31,12 +28,13 @@ target_sources(
     PUBLIC    
     test_mfri.cpp   
     ${IDL_SOURCES}
+    ${MFRI_IDL_SRCS}
 )
 
 target_link_libraries(
     mfri_test
     PUBLIC
-    ${mfri_libs}
+     ${MFRI_DEP_LIBS}
     gtest_main
 )
 

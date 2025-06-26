@@ -11,7 +11,7 @@
             "program": "${command:cmake.launchTargetPath}",
             "args": 
             [
-                "--gtest_filter=mfri_test.test_service"
+                "--gtest_filter=mfri_test.test_param"
             ],
             "stopAtEntry": false,
             "cwd": "${command:cmake.launchTargetDirectory}",

@@ -8,6 +8,7 @@
 #include "mfri/subscriber.hpp"
 #include "mfri/srv_client.hpp"
 #include "mfri/srv_server.hpp"
+#include "mfri/param_client.hpp"
 
 
 
@@ -205,6 +206,51 @@ TEST_F(mfri_test, test_service)
         DomainParticipantFactory::get_instance()->delete_participant(mParticipant);
         mParticipant = nullptr;
     }
+}
+
+
+TEST_F(mfri_test, test_param)
+{
+     int mDomainId = 0;
+    std::string mDomainName = "mfri";
+    std::string mParticipantName = "mfri_participant";
+    DomainParticipant* mParticipant = nullptr;
+
+    DomainParticipantQos participantQos;
+    participantQos.name(mParticipantName);
+    mParticipant = DomainParticipantFactory::get_instance()->create_participant(mDomainId, participantQos);
+
+
+    mfri::MfriParamClient param_client("minimal_param_node");
+
+    param_client.initialize(mParticipant);
+
+
+    int32_t index = 0;
+    while(1)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+        bool result;
+        std::string ret_msg;
+        auto value = std::to_string(index);
+        std::cout << "Setting parameter my_parameter to " << value << std::endl;
+        auto ret = param_client.set_param("my_parameter", std::to_string(index++), result, ret_msg);
+
+        if (ret != RETCODE_OK)
+        {
+            std::cerr << "Failed to set parameter : " << ret << std::endl;
+            continue;
+        }
+
+        if (!result)
+        {
+            std::cerr << "error messsage :  " << ret_msg << std::endl;
+            continue;
+        }
+    }
+    
+
 }
 
 
