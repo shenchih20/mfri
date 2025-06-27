@@ -227,27 +227,37 @@ TEST_F(mfri_test, test_param)
 
 
     int32_t index = 0;
+    rcl_interfaces::msg::ParameterValue p_value;
+    rcl_interfaces::msg::SetParametersResult result;
     while(1)
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-        bool result;
-        std::string ret_msg;
+        
         auto value = std::to_string(index);
         std::cout << "Setting parameter my_parameter to " << value << std::endl;
-        auto ret = param_client.set_param("my_parameter", std::to_string(index++), result, ret_msg);
+        auto ret = param_client.set_param("my_parameter", std::to_string(index++), result);
 
         if (ret != RETCODE_OK)
         {
-            std::cerr << "Failed to set parameter : " << ret << std::endl;
-            continue;
+            std::cerr << "Failed to set parameter : " << ret << std::endl;            
+        }
+        else if (!result.successful())
+        {
+            std::cerr << "Failed to set parameter, reason: " << result.reason() << std::endl;            
         }
 
-        if (!result)
+        ret = param_client.get_param("my_parameter", p_value);
+        if (ret != RETCODE_OK)
         {
-            std::cerr << "error messsage :  " << ret_msg << std::endl;
-            continue;
+            std::cerr << "Failed to get parameter : " << ret << std::endl;        
         }
+        else 
+        {
+            std::cout << "Got parameter my_parameter: " << p_value.string_value() << std::endl;
+        }
+        
+
     }
     
 
