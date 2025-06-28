@@ -1,7 +1,9 @@
 ﻿#pragma once
 
+#include <memory>
 #include <mfri/idl/ParameterType.hpp>
 #include <mfri/idl/ParameterValue.hpp>
+
 
 namespace mfri
 {
@@ -108,5 +110,7 @@ public:
 private:
     rcl_interfaces::msg::ParameterValue mValue;
 };
+
+using MfriParamValueSPtr = std::shared_ptr<MfriParamValue>;
 
 } // namespace mfri

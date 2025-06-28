@@ -9,6 +9,7 @@
 #include "mfri/srv_client.hpp"
 #include "mfri/srv_server.hpp"
 #include "mfri/param_client.hpp"
+#include "mfri/param_server.hpp"
 
 
 
@@ -222,42 +223,30 @@ TEST_F(mfri_test, test_param)
 
 
     mfri::MfriParamClient param_client("minimal_param_node");
+    mfri::MfriParamServer param_server("minimal_param_node");
 
     param_client.initialize(mParticipant);
+    param_server.initialize(mParticipant);
+
+
+    const std::string param_name = "my_parameter";
+
+    param_server.declare_parameter(param_name, "test");
 
 
     int32_t index = 0;
     rcl_interfaces::msg::ParameterValue p_value;
     rcl_interfaces::msg::SetParametersResult result;
-    while(1)
+    while( 5 > index++ )
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-        
-        auto value = std::to_string(index);
-        std::cout << "Setting parameter my_parameter to " << value << std::endl;
-        auto ret = param_client.set_param("my_parameter", std::to_string(index++), result);
+        auto target = std::to_string(index);
+        std::cout << "Setting parameter: " << param_name << " to " << target << std::endl;
+        param_client.set_param(param_name, target, result);
+        param_client.get_param(param_name, p_value);
 
-        if (ret != RETCODE_OK)
-        {
-            std::cerr << "Failed to set parameter : " << ret << std::endl;            
-        }
-        else if (!result.successful())
-        {
-            std::cerr << "Failed to set parameter, reason: " << result.reason() << std::endl;            
-        }
-
-        ret = param_client.get_param("my_parameter", p_value);
-        if (ret != RETCODE_OK)
-        {
-            std::cerr << "Failed to get parameter : " << ret << std::endl;        
-        }
-        else 
-        {
-            std::cout << "Got parameter my_parameter: " << p_value.string_value() << std::endl;
-        }
-        
-
+        ASSERT_EQ(p_value.string_value(), target);
     }
     
 

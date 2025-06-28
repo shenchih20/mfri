@@ -10,6 +10,8 @@ namespace mfri
 template <class RequestType, class RequestData, class ResponseType, class ResponseData>    
 class MfriSrvClient
 {
+friend class MfriParamClient;
+
 public:
     MfriSrvClient(const std::string&topic_name, const std::string& data_type_name) :
         mRequest(std::string("rq/") + topic_name +"Request", data_type_name + "Request_"),
@@ -55,7 +57,7 @@ public:
     }
 
 protected:
-    friend class MfriParamClient;
+
     ReturnCode_t send_request()
     {
         {

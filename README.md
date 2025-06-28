@@ -9,8 +9,9 @@ mini fastdds ros2 interface
 
 ## Features
 
-- ROS 2-style publisher/subscriber API
-- ROS 2-style service server/client API
+- ROS 2-style publisher/subscriber
+- ROS 2-style service server/client
+- ROS 2-style parameter server/client
 - Uses Fast DDS for transport
 - Simple C++ interface
 
@@ -139,6 +140,31 @@ public:
 };
 ```
 
-## License
+### Parameter Server
 
-See [LICENSE](LICENSE).
+```cpp
+
+#include "mfri/param_server.hpp"
+
+mfri::MfriParamServer param_server("minimal_param_node");
+
+param_server.declare_parameter("my_parameter", "test");
+
+```
+
+### Parameter Client
+
+```cpp
+
+#include "mfri/param_client.hpp"
+
+mfri::MfriParamClient param_client("minimal_param_node");
+
+rcl_interfaces::msg::SetParametersResult result;
+param_client.set_param("my_parameter", "test", result);
+
+rcl_interfaces::msg::ParameterValue value;
+param_client.get_param("my_parameter", value);
+
+```
+
